@@ -1,8 +1,3 @@
-//THESE CONTROLLERS ARE AUTHORIZED. ADMIN USERS ONLY WORK WITH PRODUCTS THEY CREATED
-//Remember bc of mongoose schemas, all products that are added have a user id attached (user that created it)
-
-//ALSO ADD *****PROTECTION***TO POST ROUTES, IN CASE PPL WANNA DELETE/EDIT/ETC ITEMS THEY DONT OWN 
-
 const Product = require('../models/product');
 const {validationResult} = require('express-validator/check')
 
@@ -12,7 +7,7 @@ const fileHelper = require('../util/file');
 exports.getAddProduct = (req, res, next) => {
   let message = req.flash('error');
   if(message.length>0){
-    message = message[0] //req.flash('error') returns array with message in it! 
+    message = message[0] 
   } else{
     message=null; 
   } 
@@ -35,14 +30,11 @@ exports.postAddProduct = (req, res, next) => {
   const description = req.body.description;
   const errors = validationResult(req);
 
-  console.log(image);      
-
-  //see if image NOT is set/ multer declined file 
   if(!image){
     return res.status(422).render('admin/edit-product', {
       pageTitle: 'Add Product',
       path: '/admin/add-product',
-      editing: false, //we are adding not editing
+      editing: false, 
       hasError: true,
       product: {
         title: title, 
@@ -94,7 +86,7 @@ exports.postAddProduct = (req, res, next) => {
   }) 
 };
 
-//USERS CAN SEE EDIT PAGE FOR ONLY THEIR PRODUCTS, BUT THEN AGAIN ONLY THEIR PRODUCTS ARE IN ADMIN VEW SO ITS COVERED 
+
 exports.getEditProduct = (req, res, next) => {
   const editMode = req.query.edit;
   if (!editMode) {
@@ -152,7 +144,7 @@ exports.postEditProduct = (req, res, next) => {
   Product.findById(prodId)
   .then(product=>{
 
-    //protection, users can only edit shit they own!
+   
     if(product.userId.toString() !== req.user._id.toString()){
       console.log('this item dont belong to u, u cant edit this!'); 
       return res.redirect('/'); 
@@ -173,29 +165,13 @@ exports.postEditProduct = (req, res, next) => {
     }) //this handles all successor promises from return save
   })
   .catch(err=>{
-    //500 = SERVER SIDE error handling 
-    // return res.status(500).render('admin/edit-product', {
-    //   pageTitle: 'Edit Product',
-    //   path: '/admin/edit-product',
-    //   editing: editMode,
-    //   product: {
-    //     title: updatedTitle, 
-    //     imageUrl: updatedImageUrl,
-    //     price: updatedPrice,
-    //     description: updatedDesc,
-    //     _id: prodId
-    //   }, 
-    //   hasError: false,
-    //   errorMessage: 'Database operation failed, please try again',
-    //   validationErrors: []
-    // }); 
     const error = new Error(err);
     error.httpStatusCode = 500; 
     return next(error);   
   })
 };
 
-//USER CAN ONLY SEE THEIR ADDED PRODUCTS IN 'ADMIN/PRODUCTS' AND REACH EDIT ROUTE FOR THEM! AUTHORIZED! 
+
 exports.getProducts = (req, res, next) => {
   Product.find({userId:req.user._id})  
   // .populate('userId')
@@ -224,7 +200,7 @@ exports.deleteProduct = (req, res, next) => {
 
     //delete pic file from storage folder, deleteOne() below deletes its url from db 
     fileHelper.deleteFile(product.imageUrl); 
-    // PROTECTION ****** product must be owned by session user in order to be deleted 
+
     return Product.deleteOne({_id: prodId, userId: req.user._id}) 
   })
   .then(result=>{

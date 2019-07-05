@@ -26,11 +26,6 @@ const store = new MongoDBStore({
 }); 
 const csrfProtection = csrf(); 
 
-//HEROKU TAKES CARE OF THIS! 
-// //read key/cert SYNChronously, server dont start till key/cert is obtained 
-// const privateKey = fs.readFileSync('server.key');
-// const certificate = fs.readFileSync('server.cert');
-
 const fileStorage = multer.diskStorage({
     destination: (req,file,cb)=>{
         cb(null, 'images');
@@ -132,9 +127,6 @@ app.use((error, req, res, next)=>{
 
 mongoose.connect('mongodb+srv://miltonpauta:Mpauta2030@cluster0-doc4o.mongodb.net/shop?retryWrites=true&w=majority') 
 .then(result=>{
-    //use https server 
-    // https
-    //     .createServer({key: privateKey, cert: certificate}, app)
     app.listen(process.env.PORT || 3000);  
 }) 
 .catch(err=>{

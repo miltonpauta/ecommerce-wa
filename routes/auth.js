@@ -36,11 +36,7 @@ router.post('/signup',
         check('email') 
         .isEmail()
         .withMessage('Please enter valid email')
-        .custom((value, {req})=>{ //make custom validator 
-            // if(value == 'test@test.com'){
-            //     throw new Error('this email is forbidden'); //return false or throw error if error is found
-            // }
-            // return true; //no error found 
+        .custom((value, {req})=>{ 
             return User.findOne({email: value})
             .then(userDoc=>{
                 if(userDoc){

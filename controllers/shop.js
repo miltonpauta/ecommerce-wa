@@ -1,4 +1,4 @@
-const fs = require('fs'); //module comes with nodejs
+const fs = require('fs'); 
 const path = require('path'); 
 
 const PDFDocument = require('pdfkit'); 
@@ -31,7 +31,7 @@ exports.getProducts = (req, res, next) => {
       totalProducts: totalItems,
       hasNextPage: ITEMS_PER_PAGE * page < totalItems,
       hasPreviousPage: page > 1,
-      nextPage: page + 1, //if current pg is 2, next is 3 
+      nextPage: page + 1, 
       prevPage: page -1,
       lastPage: Math.ceil(totalItems/ITEMS_PER_PAGE)
     }); 
@@ -60,12 +60,10 @@ exports.getProduct = (req, res, next) => {
     }); 
 };
 
-//HAS PAGINATION 
 exports.getIndex = (req, res, next) => {
-  const page = +req.query.page || 1; //+ helps out with adding since page is const STRING, it shouldnt concacenate
+  const page = +req.query.page || 1; 
   let totalItems; 
 
-  // count() gets total number of products (returns a value)
   Product.find()
   .countDocuments()
   .then(numberOfProducts=>{
@@ -74,7 +72,7 @@ exports.getIndex = (req, res, next) => {
     .skip((page-1) * ITEMS_PER_PAGE) //pagination
     .limit(ITEMS_PER_PAGE)           //this too
   })
-  .then(products=>{  //products are returned based on how much each pg can show
+  .then(products=>{ 
     res.render('shop/index',{
       prods: products, 
       pageTitle: 'Shop',
@@ -95,7 +93,6 @@ exports.getIndex = (req, res, next) => {
   });
 };
 
-//renders session user (req.user) cart ! 
 exports.getCart = (req, res, next) => { 
   req.user
   .populate('cart.items.productId') 
@@ -115,7 +112,6 @@ exports.getCart = (req, res, next) => {
   })
 };
 
-//post cart for session user(req.user)
 exports.postCart = (req, res, next) => {
   
   const prodId = req.body.productId;
@@ -149,7 +145,6 @@ exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 
-//posts order for session user! WITH STRIPE (create order then create charge!)
 exports.postOrder = (req,res,next)=>{ 
   const token = req.body.stripeToken; //token holds validated credit card data
 
@@ -166,7 +161,7 @@ exports.postOrder = (req,res,next)=>{
     }) 
 
     const products = user.cart.items.map(i=>{
-      return {quantity: i.quantity, product: {...i.productId._doc} } //doc gets all metadata about shit relating to productId, basically product info 
+      return {quantity: i.quantity, product: {...i.productId._doc} } 
     }); 
     const order = new Order({
       user: {
@@ -178,7 +173,7 @@ exports.postOrder = (req,res,next)=>{
     return order.save(); 
   }) 
   .then(result=>{
-    //create CHARGE (in this block we have ID of created ORDER above)
+    
     const charge = stripe.charges.create({
       amount: totalSum * 100, 
       currency: 'usd',
@@ -200,9 +195,9 @@ exports.postOrder = (req,res,next)=>{
   }); 
 }; 
 
-//gets orders for a single session user! 
+
 exports.getOrders = (req, res, next) => {
-  //find order with user id that matches current session user 
+  
   Order.find({'user.userId': req.user._id})
   .then(orders =>{ //array of all orders for the user is now here in .then() section 
     res.render('shop/orders', {
@@ -261,8 +256,6 @@ exports.getInvoice = (req,res,next)=>{
     const invoicePath = path.join('data', 'invoices', invoiceName) 
 
     const pdfDoc = new PDFDocument();
-    // res.setHeader('Content-Type', 'application/pdf');
-    // res.download(invoicePath); 
     pdfDoc.pipe(fs.createWriteStream(invoicePath)); //gets stored on server (invoice path) AND shown to clients
     pdfDoc.pipe(res); 
 

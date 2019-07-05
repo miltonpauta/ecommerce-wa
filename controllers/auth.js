@@ -1,10 +1,10 @@
-const crypto = require('crypto'); //built in nodejs, creates secure random values 
+const crypto = require('crypto'); 
 
 const bcrypt = require('bcryptjs'); 
 const nodemailer = require('nodemailer')
 const sendgridTransport = require('nodemailer-sendgrid-transport');
 
-const {validationResult} = require('express-validator') //this function gathers all error prior validation
+const {validationResult} = require('express-validator') 
 
 const User = require('../models/user')
 
@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport(sendgridTransport({
 exports.getLogin = (req, res, next)=>{
     let message = req.flash('error');
     if(message.length>0){
-        message = message[0] //req.flash('error') returns array with message in it! 
+        message = message[0] 
     } else{
         message=null; 
     }
@@ -128,9 +128,6 @@ exports.postSignup = (req,res,next)=>{
 
     const email = req.body.email; 
     const password = req.body.password;
-    // const confirmPassword = req.body.confirmPassword; dont need this we check dis already 
-
-    //extract errors from check() validation function w/ validationResult
     const errors = validationResult(req); 
     if(!errors.isEmpty()){
         let message = errors.array(); 
@@ -150,11 +147,11 @@ exports.postSignup = (req,res,next)=>{
         })
     } 
 
-    //generate 12 rounds of hashing for 'password'
+
     bcrypt
         .hash(password, 12)
         .then(hashedPassword=>{
-            //create new user, since none was found 
+            
             const user = new User({
                 email: email,
                 password: hashedPassword, 
@@ -292,10 +289,9 @@ exports.postNewPassword = (req, res, next)=>{
     .then(hashedPassword=>{
         //update password for user 
         resetUser.password = hashedPassword;
-        //set reset token and expiration back to undefined 
         resetUser.resetToken = undefined; 
         resetUser.resetTokenExpiration = undefined; 
-        return resetUser.save(); //save updated user into database 
+        return resetUser.save(); 
     })
     .then(result=>{
         //after all goes well, redirect to login 

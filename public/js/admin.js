@@ -1,6 +1,3 @@
-// this code will NOT run on the server but on the client 
-//hence, PUBLIC folder 
-//THIS IS AN ASYNCHRONOUS REQUEST! 
 
 const deleteProduct = btn =>{
     //extract values from inputs! 
@@ -9,12 +6,9 @@ const deleteProduct = btn =>{
 
     // <article> element we want to delete
     const productElement = btn.closest('article'); 
-
-    //send http delete request to server, which deletes product on db, image on server storage, etc! 
     fetch('/admin/product/' + prodId,{
         method: 'DELETE',
         headers: {
-            //csrf tokens can also be passed thru headers and query params!
             'csrf-token': csrf
         }
     })
@@ -22,13 +16,10 @@ const deleteProduct = btn =>{
         return result.json(); 
     })
     .then(data=>{
-        //now, delete it on DOM (on the view page!)
         console.log(data); 
-        productElement.parentNode.removeChild(productElement); //this code/functions work on browser 
+        productElement.parentNode.removeChild(productElement);
     })
     .catch(err=>{
         console.log(result)
     })
 }
-
-//this approach updates page when deleting product instead of reloading with POST requests 

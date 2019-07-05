@@ -125,7 +125,7 @@ app.use((error, req, res, next)=>{
     res.redirect('/500'); 
 }) 
 
-mongoose.connect('mongodb+srv://miltonpauta:Mpauta2030@cluster0-doc4o.mongodb.net/shop?retryWrites=true&w=majority') 
+mongoose.connect(`mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0-doc4o.mongodb.net/${process.env.MONGO_DEFAULT_DATABASE}?retryWrites=true&w=majority`) 
 .then(result=>{
     app.listen(process.env.PORT || 3000);  
 }) 

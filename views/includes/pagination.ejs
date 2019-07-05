@@ -1,0 +1,17 @@
+<section class="pagination"> 
+        <!-- there will always be a page 1, only render this if there is only 1 pg-->
+        <!-- also, there is no / in ahref, so it will follow path we click, ex: '/pageNumber' or '/products/pageNumber' -->
+        <% if(currentPage !== 1 && prevPage !==1) { %>
+            <a href="?page=1">1</a>
+        <% } %> 
+        <% if(hasPreviousPage) { %>
+            <a href="?page=<%=prevPage%>"><%=prevPage%></a>
+        <% } %> 
+        <a href="/?page=<%=currentPage%>" class="active"><%=currentPage%></a>
+        <% if(hasNextPage) { %>
+            <a href="?page=<%=nextPage%>"><%=nextPage%></a>
+        <% } %> 
+        <% if(lastPage !== currentPage && nextPage !== lastPage) { %> 
+            <a href="?page=<%=lastPage%>"><%=lastPage%></a>
+        <% } %> 
+    </section>
